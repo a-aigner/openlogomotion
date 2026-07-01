@@ -20,26 +20,33 @@ Upload an **SVG** logo (filled paths), pick a material, environment, and animati
 - **Format controls** — portrait (9:16), square (1:1), landscape (16:9), custom duration, extrusion depth, bevel.
 - **Logo input:** SVG only (filled paths). Stroke-only or no-fill SVGs are rejected with a descriptive error.
 
-### Showcase (beat-driven match-cut montage)
+### Showcase v2 (logo match-cut over generated color frames)
 
-Upload a logo and export a fast, looping sequence of your logo composited onto a set of bundled mockup frames — cut on the beat.
+Upload a logo, arrange generated color frames, and export a fast-cutting "logo match-cut" video where the logo stays **centered and fixed** while solid-color and palette background frames cut behind it. Cuts fire on audio onsets — either detected from your own uploaded audio (browser-side, no server) or from the bundled track — and a cut-density control subdivides for faster cuts.
 
 - **Logo input:** SVG, PNG, JPEG, or WebP — raster logos are embedded directly without tracing.
-- **Bundled mockup frames:** four hand-authored CC0 SVG placeholders — Card, Glass panel, Billboard, Poster — each with a defined logo-placement quad. See `public/assets/frames/CREDITS.md` and the roadmap note below for swapping them out.
-- **Beat-driven cuts:** a BPM-derived grid drives the frame cuts. The default cut speed is 2 cuts per beat (fast cuts). The frame list loops to fill the total duration.
-- **Right-panel Frames list:** add, remove, and reorder frames; toggle each frame's **invert** flag for light/dark variants.
-- **Cut speed, track, and format controls** — same format options as Pulse (9:16, 1:1, 16:9).
-- **Download Video** — exports an MP4 via the same `/api/render` pipeline as Pulse.
-- **Fully 2D rendering** — no Three.js; the Showcase composition uses Remotion's 2D canvas + CSS perspective transforms.
+- **Logo stays centered** — the logo is always composited at the center of the frame at a configurable size (Logo size slider, 15–70 % of the shorter dimension). There is no surface placement or perspective transform in v2.
+- **Generated color frames (Solid and Palette):**
+  - **Solid** — a single hex color fills the entire background.
+  - **Palette** — two or more hex colors are split into equal vertical bands.
+  - Each frame can be toggled **inverted** (CSS `invert(1)`) for instant light/dark variants of the logo.
+  - Frames loop to fill the entire export duration.
+- **Right-rail Frames panel:** add Solid or Palette frames, edit colors via color pickers, reorder with ↑/↓, toggle invert with ◐, remove with ✕.
+- **Audio (right-rail Audio panel):**
+  - **Bundled track** — select from the bundled royalty-free-placeholder track; cut times derive from the bundled beat grid.
+  - **Upload audio** — upload any audio file (MP3, WAV, M4A, OGG, etc.); the browser decodes it and runs energy-based onset detection to derive cut times. No audio leaves your device.
+  - **Cut density slider (1×–4×)** — subdivides the detected or bundled cut grid for more cuts per second without re-analyzing.
+- **Right-rail Settings panel:** Logo size slider, Format (9:16, 1:1, 16:9), Duration (4–10 s), and **Download Video**.
+- **Download Video** — POSTs config (including the audio data URL for uploaded audio) to `/api/render`; the server embeds the chosen audio in the output MP4.
+- **Fully 2D rendering** — no Three.js; the Showcase composition uses Remotion's 2D `<AbsoluteFill>` layout.
 
 ---
 
 ## Features (shared)
 
-- **Beat-synced audio** — deterministic beat grid derived from a bundled royalty-free-placeholder track; animations lock to the beat every frame without runtime analysis.
 - **Live preview** — Remotion `<Player>` in the browser mirrors the final render exactly.
 - **MP4 export** — click **Export MP4** / **Download Video** to POST to `/api/render`; Chromium renders the same Remotion composition server-side and streams the file back.
-- **Fully local** — all assets (frames, tracks, HDRIs) are bundled; no network calls at runtime.
+- **Fully local** — all computation (onset detection, rendering) runs on your machine; no network calls at runtime. Uploaded audio is analyzed in the browser and embedded in the export as a data URL.
 
 ---
 
@@ -66,6 +73,8 @@ Two Remotion compositions — `LogoComposition` (id `LogoPulse`) for the Pulse s
 
 When you click **Export MP4** / **Download Video**, the browser POSTs your config JSON and the composition id to `/api/render` (`app/api/render/route.ts`). The route calls `@remotion/renderer`'s `renderMedia`, passing `chromiumOptions: { gl: "angle" }` and the shared `webpackOverride` from `src/remotion/webpack-override.ts` (which wires up the `@/` path alias). The resulting MP4 is streamed back as a download.
 
+For Showcase, uploaded audio is passed as a data URL in the config — the render server embeds it directly in the output MP4, so no temporary audio files are needed on the server.
+
 ---
 
 ## How to Add a Track
@@ -89,17 +98,15 @@ The ingester (`src/lib/logo-ingest.ts`) requires **filled paths** — stroke-onl
 
 ---
 
-## Roadmap (v1 is deliberately scoped)
+## Roadmap
 
-The following are intentionally **out of scope** for v1 and are tracked for future releases:
+The following are intentionally **out of scope** for the current release and are tracked for future iterations:
 
-- **Real mockup frames for Showcase** — the four bundled frames (`card.svg`, `panel.svg`, `billboard.svg`, `poster.svg`) are CC0 placeholders. Replace them with properly-licensed artwork in `public/assets/frames/` and update the geometry quads in `src/lib/frames.ts` to match.
-- **Custom frame upload** — no in-app frame upload; frames are swapped by editing files on disk.
-- **In-UI logo placement editing** — logo position within each frame is defined in `src/lib/frames.ts`; there is no drag-to-place UI in v1.
-- **AI-generated mockups** — not implemented; mockups are static SVGs authored by hand.
+- **Image-drop-in frames for Showcase** — no mockup-photo or brand-image background frames in v2; only generated solid/palette frames are supported. Drop-in image frames are deferred to a future release.
+- **Gradient frames for Showcase** — two-stop or multi-stop CSS gradient backgrounds are deferred; only solid colors and vertical palette bands are generated today.
+- **In-UI logo placement editing** — the logo is always centered in Showcase v2. A drag-to-place or offset control is a roadmap item.
 - **Raster auto-tracing for Pulse** — PNG / JPG logos work in Showcase (embedded as-is) but Pulse still requires filled-path SVGs.
-- **User-uploaded audio + runtime beat detection** — v1 ships a bundled track only; v2 will accept arbitrary audio and detect beats at upload time.
-- **Accounts / cloud / watermark** — v1 is fully local and watermark-free.
+- **Accounts / cloud / watermark** — fully local and watermark-free now and in future iterations.
 
 ---
 
@@ -108,9 +115,11 @@ The following are intentionally **out of scope** for v1 and are tracked for futu
 - **Bundled audio is a CC0 placeholder** — `public/assets/tracks/pulse-120.mp3` is a procedurally generated 880 Hz click-track. Replace it with properly-licensed audio before any public deployment (see `public/assets/tracks/CREDITS.md`).
 - **No dimension / duration clamping in `/api/render`** — appropriate for local use; add guards before exposing publicly.
 - **Export duration vs. track length** — the bundled track is ~6 s. Exports longer than the track length will outrun the audio and beat grid: the logo stops reacting and audio ends before the video does. Keep export durations at or under the track length until looping or additional tracks are added.
-- **Fixed fps and resolution** — fps is fixed at 30 and resolution is fixed per aspect ratio in v1. Custom fps/resolution is a roadmap item.
-- **Pulse: SVG input only** — no raster auto-tracing in v1. Showcase accepts SVG, PNG, JPEG, and WebP directly.
-- **Showcase mockup frames are placeholders** — the bundled SVGs are CC0 stand-ins; replace them before any public deployment (see `public/assets/frames/CREDITS.md`).
+- **Fixed fps and resolution** — fps is fixed at 30 and resolution is fixed per aspect ratio. Custom fps/resolution is a roadmap item.
+- **Pulse: SVG input only** — no raster auto-tracing. Showcase accepts SVG, PNG, JPEG, and WebP directly.
+- **Showcase: generated frames only (v2)** — only Solid (single hex color) and Palette (vertical color bands) frames are available. Drop-in image frames and gradient frames are deferred to a future release.
+- **Showcase onset detection is energy-based / browser-side** — cut times are derived from a short-time RMS energy onset-detection function running in the browser via the Web Audio API. Detection quality depends on transient clarity in the uploaded audio; highly compressed or ambient tracks may yield fewer onsets. No server-side ML beat detection is used.
+- **Uploaded audio stays in the browser** — analysis runs entirely client-side (Web Audio API `decodeAudioData`). The audio data URL is embedded in the render config POSTed to `/api/render` and returned in the MP4; it is not stored on the server.
 
 ---
 

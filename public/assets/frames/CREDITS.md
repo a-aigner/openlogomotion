@@ -1,6 +1,8 @@
-# Bundled mockup frames
+# Showcase frames
 
-These SVG mockups (`card.svg`, `panel.svg`, `billboard.svg`, `poster.svg`) are
-CC0 / public-domain placeholders authored for OpenLogomotion. Replace them with
-your own properly-licensed mockup artwork for production use. Each frame's
-logo-placement geometry lives in `src/lib/frames.ts`.
+In Showcase v2 all background frames are **generated at runtime** (solid hex colors
+and vertical palette bands). No bundled image or SVG mockup files are shipped.
+
+The v1 placeholder SVGs (`card.svg`, `panel.svg`, `billboard.svg`, `poster.svg`)
+that were previously in this directory have been removed in v2. Drop-in image frames
+are a roadmap item for a future release.
