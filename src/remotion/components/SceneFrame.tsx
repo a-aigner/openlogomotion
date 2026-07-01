@@ -14,9 +14,9 @@ export const SceneFrame: React.FC<{
   height: number;
 }> = ({ frame, variant, logo, logoStyle, width, height }) => {
   const inverted = variant === "inverted";
-  const shadow = logoStyle.dropShadow ? "drop-shadow(0 6px 14px rgba(0,0,0,0.35))" : "none";
+  const shadow = logoStyle.dropShadow ? "drop-shadow(0 6px 14px rgba(0,0,0,0.35))" : "";
   // Inverted flips the logo light/dark to contrast the surface.
-  const logoFilter = `${inverted ? "invert(1) " : ""}${shadow}`.trim();
+  const logoFilter = `${inverted ? "invert(1)" : ""} ${shadow}`.trim() || "none";
 
   const logoImg = (style: React.CSSProperties) => (
     <Img src={logo.src} style={{ ...style, filter: logoFilter, objectFit: "contain" }} />

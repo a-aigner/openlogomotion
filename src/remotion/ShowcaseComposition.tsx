@@ -16,8 +16,8 @@ export const ShowcaseComposition: React.FC<{ config: ShowcaseConfig }> = ({ conf
   const beatmap = BEATMAPS[track.id];
   if (!beatmap) throw new Error(`No beatmap registered for track "${track.id}"`);
 
-  const ordered = config.frames.length > 0 ? config.frames : []; // empty guarded below
-  const list = ordered.length > 0 ? ordered : [{ id: getFrame("card").id, variant: "normal" as const }];
+  const list =
+    config.frames.length > 0 ? config.frames : [{ id: "card", variant: "normal" as const }];
   const idx = cutIndexAt(frame, fps, beatmap.bpm, config.cutsPerBeat);
   const current = pickFrame(list, idx);
 
