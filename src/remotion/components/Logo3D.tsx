@@ -17,7 +17,11 @@ export const Logo3D: React.FC<{
       depth: config.extrusion.depth, bevelEnabled: config.extrusion.bevel > 0,
       bevelThickness: config.extrusion.bevel, bevelSize: config.extrusion.bevel, bevelSegments: 2,
     });
-    g.center();
+    g.translate(
+      -parsed.normalize.center[0],
+      -parsed.normalize.center[1],
+      -config.extrusion.depth / 2
+    );
     return { g, color };
   }), [parsed, config.extrusion.depth, config.extrusion.bevel]);
 
