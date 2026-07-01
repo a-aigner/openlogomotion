@@ -34,7 +34,7 @@ bundled or reproduced.
 | Decision | Choice |
 |---|---|
 | Logo placement | **Centered, fixed**, consistent size on every frame (size control) |
-| Frame types | **image** (user drop-in) · **solid** (hex) · **gradient** (2–3 stops) · **palette** (swatches) |
+| Frame types (this iteration) | **solid** (hex code) · **palette** (swatches) — generated from color codes. Image drop-in and gradients are deferred to a later iteration. |
 | Frame variant | `normal` / `inverted` (flips centered logo light↔dark) |
 | Audio source | Bundled track **or** user-uploaded file |
 | Beat sync | **Onset/transient detection** on the audio → cut times |
@@ -78,10 +78,10 @@ Editor (client)
 
 ```ts
 type FrameVariant = "normal" | "inverted";
+// This iteration: generated frames only. `image` (user drop-in) and `gradient`
+// are deferred to a later iteration; the union is intentionally open to extend.
 type Frame =
-  | { kind: "image";    variant: FrameVariant; src: string; fit: "cover" | "contain" }
   | { kind: "solid";    variant: FrameVariant; color: string }
-  | { kind: "gradient"; variant: FrameVariant; stops: string[]; angle: number }
   | { kind: "palette";  variant: FrameVariant; colors: string[] };
 
 type AudioSource =
@@ -182,8 +182,10 @@ once (editor) and its output is stored — the render never re-analyzes.
   `cutTimes`).
 - Video/animated frame backgrounds; 3D frames.
 - Per-frame logo repositioning (logo is always centered in v2).
-- Music-library licensing/streaming; stock-photo API integration (users supply
-  their own images/audio).
+- Music-library licensing/streaming; stock-photo API integration.
+- **Image-drop-in frames and gradient frames** — deferred to a later iteration
+  (this iteration ships generated `solid` + `palette` frames only). The `Frame`
+  union and editor "Add frame" are built to extend to these without rework.
 
 ## 14. Migration from v1
 
