@@ -10,6 +10,7 @@ describe("config", () => {
   });
   it("DEFAULT_CONFIG is internally consistent", () => {
     expect(DEFAULT_CONFIG.format.width).toBe(FORMATS[DEFAULT_CONFIG.format.aspect].width);
+    expect(DEFAULT_CONFIG.format.height).toBe(FORMATS[DEFAULT_CONFIG.format.aspect].height);
     expect(DEFAULT_CONFIG.format.durationInFrames).toBe(
       resolveDuration(5, DEFAULT_CONFIG.format.fps)
     );
