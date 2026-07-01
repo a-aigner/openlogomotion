@@ -4,6 +4,8 @@ export type OnsetOptions = { hop?: number; sensitivity?: number; minGapMs?: numb
 // positive difference → adaptive-threshold peak-picking. Pure & deterministic.
 export function onsetTimes(samples: Float32Array, sampleRate: number, opts: OnsetOptions = {}): number[] {
   const hop = opts.hop ?? 512;
+  // Default 3.0: suppresses false onsets from slow-varying background hum; lower
+  // toward ~1.3 for quieter/softer transients.
   const sensitivity = opts.sensitivity ?? 3.0;
   const minGapSamples = ((opts.minGapMs ?? 80) / 1000) * sampleRate;
   const nHops = Math.floor(samples.length / hop);

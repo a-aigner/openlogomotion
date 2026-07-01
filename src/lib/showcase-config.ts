@@ -36,6 +36,8 @@ const DEFAULT_FRAMES: Frame[] = [
 ];
 
 // Default cut grid (~4 cuts/sec) so the preview cuts before any audio analysis.
+// This is a SYNTHETIC even grid, NOT derived from the bundled track's beatmap;
+// upload audio + Analyze to get onset-synced cutTimes for real beat matching.
 const DEFAULT_CUT_TIMES = Array.from({ length: 24 }, (_, i) => Number((i * 0.25).toFixed(3)));
 
 export const DEFAULT_SHOWCASE_CONFIG: ShowcaseConfig = {
