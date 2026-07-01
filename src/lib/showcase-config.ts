@@ -26,5 +26,6 @@ export const DEFAULT_SHOWCASE_CONFIG: ShowcaseConfig = {
   cutsPerBeat: 2,
   logoStyle: { dropShadow: true, sizePct: 1 },
   audio: { trackId: "pulse-120" },
-  format: { aspect: "9:16", ...FORMATS["9:16"], fps: 30, durationInFrames: resolveDuration(8, 30) },
+  // 6s matches the bundled track length so audio doesn't tail off into silence.
+  format: { aspect: "9:16", ...FORMATS["9:16"], fps: 30, durationInFrames: resolveDuration(6, 30) },
 };

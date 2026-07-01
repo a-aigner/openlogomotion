@@ -2,7 +2,7 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, staticFile } from
 import { getFrame } from "@/lib/frames";
 import { cutIndexAt, pickFrame } from "@/lib/cut-sequencer";
 import { getTrack } from "@/lib/tracks";
-import type { ShowcaseConfig } from "@/lib/showcase-config";
+import { DEFAULT_SHOWCASE_CONFIG, type ShowcaseConfig } from "@/lib/showcase-config";
 import type { Beatmap } from "@/lib/beat-engine";
 import { SceneFrame } from "./components/SceneFrame";
 import pulse120 from "../../public/assets/beatmaps/pulse-120.json";
@@ -16,8 +16,8 @@ export const ShowcaseComposition: React.FC<{ config: ShowcaseConfig }> = ({ conf
   const beatmap = BEATMAPS[track.id];
   if (!beatmap) throw new Error(`No beatmap registered for track "${track.id}"`);
 
-  const list =
-    config.frames.length > 0 ? config.frames : [{ id: "card", variant: "normal" as const }];
+  // Never render a blank video: fall back to the full bundled frame library.
+  const list = config.frames.length > 0 ? config.frames : DEFAULT_SHOWCASE_CONFIG.frames;
   const idx = cutIndexAt(frame, fps, beatmap.bpm, config.cutsPerBeat);
   const current = pickFrame(list, idx);
 

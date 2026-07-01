@@ -18,7 +18,7 @@ describe("frames + showcase config", () => {
     for (const item of DEFAULT_SHOWCASE_CONFIG.frames) expect(() => getFrame(item.id)).not.toThrow();
     const fmt = DEFAULT_SHOWCASE_CONFIG.format;
     expect(fmt.width).toBe(FORMATS[fmt.aspect].width);
-    expect(fmt.durationInFrames).toBe(resolveDuration(8, fmt.fps));
+    expect(fmt.durationInFrames).toBe(resolveDuration(6, fmt.fps));
   });
   it("cutsPerBeat is a positive integer", () => {
     expect(DEFAULT_SHOWCASE_CONFIG.cutsPerBeat).toBeGreaterThanOrEqual(1);
