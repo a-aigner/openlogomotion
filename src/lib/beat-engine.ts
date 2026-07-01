@@ -1,6 +1,7 @@
 export type Beatmap = { bpm: number; beats: number[]; energy?: number[] };
 export type BeatState = { phase: number; sinceBeat: number; energy: number };
 
+// `beatmap.beats` must be sorted ascending; the search relies on the early break.
 export function beatPhase(frame: number, fps: number, beatmap: Beatmap): BeatState {
   const t = frame / fps;
   const { beats } = beatmap;

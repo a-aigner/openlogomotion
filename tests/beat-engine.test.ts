@@ -22,4 +22,14 @@ describe("beatPhase", () => {
   it("is deterministic for the same frame", () => {
     expect(beatPhase(20, 30, bm)).toEqual(beatPhase(20, 30, bm));
   });
+  it("before the very first beat (beats start after t=0), measures sinceBeat from t=0", () => {
+    const late: Beatmap = { bpm: 120, beats: [1.0, 2.0] };
+    const s = beatPhase(15, 30, late); // t=0.5, before first beat at 1.0
+    expect(s.sinceBeat).toBeCloseTo(0.5, 5); // origin is t=0
+    expect(s.energy).toBe(1);
+  });
+  it("energy defaults to 1 when the beatmap has no energy array", () => {
+    const noEnergy: Beatmap = { bpm: 120, beats: [0, 0.5, 1.0] };
+    expect(beatPhase(15, 30, noEnergy).energy).toBe(1); // beat at 0.5, no energy → 1
+  });
 });
