@@ -3,7 +3,6 @@ import { selectComposition, renderMedia } from "@remotion/renderer";
 import { readFile, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { LogoAnimConfig } from "@/lib/config";
 import { webpackOverride } from "@/remotion/webpack-override";
 
 export const runtime = "nodejs";
@@ -16,10 +15,14 @@ const getBundle = () =>
     webpackOverride,
   }));
 
-export async function renderToFile(config: LogoAnimConfig, outPath: string): Promise<void> {
+export async function renderToFile(
+  config: unknown,
+  outPath: string,
+  compositionId: string = "LogoPulse",
+): Promise<void> {
   const serveUrl = await getBundle();
   const inputProps = { config };
-  const composition = await selectComposition({ serveUrl, id: "LogoPulse", inputProps });
+  const composition = await selectComposition({ serveUrl, id: compositionId, inputProps });
   await renderMedia({
     serveUrl,
     composition,
@@ -27,17 +30,16 @@ export async function renderToFile(config: LogoAnimConfig, outPath: string): Pro
     outputLocation: outPath,
     inputProps,
     chromiumOptions: { gl: "angle" },
-    // dimensions/fps/duration come from the composition's calculateMetadata (see Root.tsx)
   });
 }
 
 export async function POST(req: Request) {
   let dir: string | undefined;
   try {
-    const { config } = (await req.json()) as { config: LogoAnimConfig };
+    const { config, id } = (await req.json()) as { config: unknown; id?: string };
     dir = await mkdtemp(join(tmpdir(), "logomotion-"));
     const out = join(dir, "logo.mp4");
-    await renderToFile(config, out);
+    await renderToFile(config, out, id ?? "LogoPulse");
     const bytes = await readFile(out);
     return new Response(new Uint8Array(bytes), {
       headers: {
