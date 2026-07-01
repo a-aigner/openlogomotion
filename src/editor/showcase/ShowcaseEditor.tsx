@@ -7,9 +7,10 @@ import { parseSvg } from "@/lib/logo-ingest";
 import { useShowcaseConfig } from "./useShowcaseConfig";
 import { FramesPanel } from "./FramesPanel";
 import { ShowcaseControls } from "./ShowcaseControls";
+import { AudioPanel } from "./AudioPanel";
 
 export default function ShowcaseEditor() {
-  const { config, patch, setFrames } = useShowcaseConfig();
+  const { config, patch, setFrames, setCutTimes } = useShowcaseConfig();
   const [warn, setWarn] = useState<string[]>([]);
 
   const onUpload = async (file: File) => {
@@ -50,6 +51,7 @@ export default function ShowcaseEditor() {
         />
       </div>
       <div>
+        <AudioPanel config={config} patch={patch} setCutTimes={setCutTimes} />
         <FramesPanel config={config} setFrames={setFrames} />
         <ShowcaseControls config={config} patch={patch} />
       </div>

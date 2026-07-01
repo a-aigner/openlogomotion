@@ -17,5 +17,6 @@ export function useShowcaseConfig() {
   const [config, setConfig] = useState<ShowcaseConfig>(DEFAULT_SHOWCASE_CONFIG);
   const patch = useCallback((p: DeepPartial<ShowcaseConfig>) => setConfig((c) => merge(c, p)), []);
   const setFrames = useCallback((frames: ShowcaseConfig["frames"]) => setConfig((c) => ({ ...c, frames })), []);
-  return { config, patch, setFrames } as const;
+  const setCutTimes = useCallback((cutTimes: number[]) => setConfig((c) => ({ ...c, cutTimes })), []);
+  return { config, patch, setFrames, setCutTimes } as const;
 }

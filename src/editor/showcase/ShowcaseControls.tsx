@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { TRACKS } from "@/lib/tracks";
 import { FORMATS, resolveDuration, type Aspect } from "@/lib/config";
 import type { ShowcaseConfig } from "@/lib/showcase-config";
 import type { DeepPartial } from "./useShowcaseConfig";
@@ -29,15 +28,6 @@ export const ShowcaseControls: React.FC<{
         <input type="range" min={0.15} max={0.7} step={0.01} value={config.logoSizePct}
           onChange={(e) => patch({ logoSizePct: Number(e.target.value) })} />
       </label>
-      <fieldset><legend>Music (bundled)</legend>
-        {TRACKS.map((t) => (
-          <label key={t.id} style={{ display: "block" }}>
-            <input type="radio" name="sc2-track"
-              checked={config.audio.kind === "bundled" && config.audio.trackId === t.id}
-              onChange={() => patch({ audio: { kind: "bundled", trackId: t.id } })} />{t.title}
-          </label>
-        ))}
-      </fieldset>
       <label>Format
         <select value={config.format.aspect}
           onChange={(e) => { const a = e.target.value as Aspect; patch({ format: { aspect: a, ...FORMATS[a] } }); }}>
