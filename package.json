@@ -10,6 +10,11 @@
     "remotion:render": "remotion render src/remotion/index.ts LogoPulse out/spine.mp4"
   },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openlogomotion/logomotion"
+  },
+  "keywords": ["svg", "3d", "animation", "remotion", "logo", "mp4", "beat-sync"],
   "type": "module",
   "dependencies": {
     "@react-three/drei": "^10.7.7",
