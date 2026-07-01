@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { readFileSync } from "node:fs";
 import { describe, it, expect } from "vitest";
 import { parseSvg } from "../src/lib/logo-ingest";
