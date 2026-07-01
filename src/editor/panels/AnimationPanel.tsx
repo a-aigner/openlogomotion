@@ -1,8 +1,9 @@
 import type { LogoAnimConfig, AnimPreset } from "@/lib/config";
+import type { DeepPartial } from "../useConfig";
 
 const ANIM_PRESETS: AnimPreset[] = ["spin", "pulseBeat", "bounce", "wobble", "flip", "assemble", "float"];
 
-export const AnimationPanel: React.FC<{ config: LogoAnimConfig; patch: (p: any) => void }> = ({ config, patch }) => (
+export const AnimationPanel: React.FC<{ config: LogoAnimConfig; patch: (p: DeepPartial<LogoAnimConfig>) => void }> = ({ config, patch }) => (
   <fieldset>
     <legend>Animation</legend>
 

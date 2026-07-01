@@ -40,6 +40,7 @@ export const Logo3D: React.FC<{
               color={spec.useColorFromLogo ? color : spec.color}
               metalness={spec.metalness} roughness={spec.roughness}
               transmission={spec.transmission ?? 0}
+              transparent={(spec.transmission ?? 0) > 0}
               emissive={spec.emissiveIntensity ? (spec.useColorFromLogo ? color : spec.color) : "#000000"}
               emissiveIntensity={spec.emissiveIntensity ?? 0}
             />

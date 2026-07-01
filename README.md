@@ -79,7 +79,8 @@ The following are intentionally **out of scope** for v1 and are tracked for futu
 
 - **Bundled audio is a CC0 placeholder** — `public/assets/tracks/pulse-120.mp3` is a procedurally generated 880 Hz click-track. Replace it with properly-licensed audio before any public deployment (see `public/assets/tracks/CREDITS.md`).
 - **No dimension / duration clamping in `/api/render`** — appropriate for local use; add guards before exposing publicly.
-- **Glass material** — rendering accuracy depends on GPU / driver; verify in your target environment.
+- **Export duration vs. track length** — the bundled track is ~6 s. Exports longer than the track length will outrun the audio and beat grid: the logo stops reacting and audio ends before the video does. Keep export durations at or under the track length until looping or additional tracks are added.
+- **Fixed fps and resolution** — fps is fixed at 30 and resolution is fixed per aspect ratio in v1. Custom fps/resolution is a roadmap item.
 - **SVG input only** — no raster auto-tracing in v1.
 
 ---

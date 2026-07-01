@@ -1,11 +1,16 @@
 import type { EnvPreset, LightingPreset } from "./config";
+import studio from "@pmndrs/assets/hdri/studio.exr";
+import city from "@pmndrs/assets/hdri/city.exr";
+import sunset from "@pmndrs/assets/hdri/sunset.exr";
+import dawn from "@pmndrs/assets/hdri/dawn.exr";
+import night from "@pmndrs/assets/hdri/night.exr";
 
-export const ENV_PRESETS: Record<EnvPreset, { preset: "studio"|"city"|"sunset"|"dawn"|"night" }> = {
-  studio: { preset: "studio" },
-  city:   { preset: "city" },
-  sunset: { preset: "sunset" },
-  dawn:   { preset: "dawn" },
-  night:  { preset: "night" },
+export const ENV_PRESETS: Record<EnvPreset, { hdri: string }> = {
+  studio: { hdri: studio },
+  city:   { hdri: city },
+  sunset: { hdri: sunset },
+  dawn:   { hdri: dawn },
+  night:  { hdri: night },
 };
 
 export const LIGHTING_PRESETS: Record<LightingPreset, { key: number; fill: number; rim: number }> = {

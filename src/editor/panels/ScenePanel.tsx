@@ -1,7 +1,8 @@
 import { ENV_PRESETS, LIGHTING_PRESETS } from "@/lib/environments";
 import type { LogoAnimConfig, EnvPreset, LightingPreset } from "@/lib/config";
+import type { DeepPartial } from "../useConfig";
 
-export const ScenePanel: React.FC<{ config: LogoAnimConfig; patch: (p: any) => void }> = ({ config, patch }) => {
+export const ScenePanel: React.FC<{ config: LogoAnimConfig; patch: (p: DeepPartial<LogoAnimConfig>) => void }> = ({ config, patch }) => {
   const bg = config.scene.background;
   return (
     <fieldset>

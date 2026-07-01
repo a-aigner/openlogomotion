@@ -1,7 +1,8 @@
 import { MATERIAL_PRESETS } from "@/lib/materials";
 import type { LogoAnimConfig, MaterialPreset } from "@/lib/config";
+import type { DeepPartial } from "../useConfig";
 
-export const MaterialPanel: React.FC<{ config: LogoAnimConfig; patch: (p: any) => void }> = ({ config, patch }) => (
+export const MaterialPanel: React.FC<{ config: LogoAnimConfig; patch: (p: DeepPartial<LogoAnimConfig>) => void }> = ({ config, patch }) => (
   <fieldset>
     <legend>Material</legend>
     {(Object.keys(MATERIAL_PRESETS) as MaterialPreset[]).map((m) => (

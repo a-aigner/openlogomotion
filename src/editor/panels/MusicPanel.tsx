@@ -1,7 +1,8 @@
 import { TRACKS } from "@/lib/tracks";
 import type { LogoAnimConfig } from "@/lib/config";
+import type { DeepPartial } from "../useConfig";
 
-export const MusicPanel: React.FC<{ config: LogoAnimConfig; patch: (p: any) => void }> = ({ config, patch }) => (
+export const MusicPanel: React.FC<{ config: LogoAnimConfig; patch: (p: DeepPartial<LogoAnimConfig>) => void }> = ({ config, patch }) => (
   <fieldset>
     <legend>Music</legend>
     {TRACKS.map((track) => (

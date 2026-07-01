@@ -10,7 +10,7 @@ export const Scene: React.FC<{ config: LogoAnimConfig; children: React.ReactNode
       <ambientLight intensity={light.fill} />
       <directionalLight position={[4, 5, 6]} intensity={light.key} />
       <directionalLight position={[-5, 2, -4]} intensity={light.rim} />
-      <Environment preset={env.preset} />
+      <Environment files={env.hdri} />
       {children}
     </>
   );

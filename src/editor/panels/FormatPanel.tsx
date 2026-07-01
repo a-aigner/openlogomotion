@@ -1,9 +1,10 @@
 import { FORMATS, resolveDuration } from "@/lib/config";
 import type { LogoAnimConfig, Aspect } from "@/lib/config";
+import type { DeepPartial } from "../useConfig";
 
 const ASPECTS: Aspect[] = ["9:16", "1:1", "16:9"];
 
-export const FormatPanel: React.FC<{ config: LogoAnimConfig; patch: (p: any) => void }> = ({ config, patch }) => {
+export const FormatPanel: React.FC<{ config: LogoAnimConfig; patch: (p: DeepPartial<LogoAnimConfig>) => void }> = ({ config, patch }) => {
   const currentSeconds = config.format.durationInFrames / config.format.fps;
 
   return (
