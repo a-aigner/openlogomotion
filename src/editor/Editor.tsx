@@ -13,6 +13,29 @@ import { FormatPanel } from "./panels/FormatPanel";
 export default function Editor() {
   const [config, patch] = useConfig();
   const [warn, setWarn] = useState<string[]>([]);
+  const [rendering, setRendering] = useState(false);
+
+  const onExport = async () => {
+    setRendering(true);
+    try {
+      const res = await fetch("/api/render", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ config }),
+      });
+      if (!res.ok) throw new Error(((await res.json()) as { error?: string }).error ?? "Render failed");
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "logo.mp4";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert((e as Error).message);
+    } finally {
+      setRendering(false);
+    }
+  };
 
   const onUpload = async (file: File) => {
     const svg = await file.text();
@@ -60,7 +83,9 @@ export default function Editor() {
           controls
           loop
         />
-        {/* Export button added in Task 10 */}
+        <button onClick={onExport} disabled={rendering} style={{ marginTop: 12 }}>
+          {rendering ? "Rendering…" : "Export MP4"}
+        </button>
       </div>
     </div>
   );

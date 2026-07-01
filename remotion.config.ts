@@ -1,18 +1,7 @@
 import { Config } from "@remotion/cli/config";
-import path from "path";
+import { webpackOverride } from "./src/remotion/webpack-override";
 
 Config.setVideoImageFormat("jpeg");
 Config.setEntryPoint("./src/remotion/index.ts");
 Config.setChromiumOpenGlRenderer("angle");
-Config.overrideWebpackConfig((currentConfiguration) => {
-  return {
-    ...currentConfiguration,
-    resolve: {
-      ...currentConfiguration.resolve,
-      alias: {
-        ...(currentConfiguration.resolve?.alias ?? {}),
-        "@": path.resolve(process.cwd(), "src"),
-      },
-    },
-  };
-});
+Config.overrideWebpackConfig(webpackOverride);
