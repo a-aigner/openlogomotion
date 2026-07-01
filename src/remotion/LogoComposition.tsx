@@ -7,7 +7,7 @@ import type { LogoAnimConfig } from "@/lib/config";
 import { getTrack } from "@/lib/tracks";
 import pulse120 from "../../public/assets/beatmaps/pulse-120.json";
 
-const BEATMAPS: Record<string, Beatmap> = { "pulse-120": pulse120 as Beatmap };
+const BEATMAPS: Record<string, Beatmap> = { "pulse-120": pulse120 satisfies Beatmap };
 
 const bgStyle = (bg: LogoAnimConfig["scene"]["background"]): React.CSSProperties =>
   bg.type === "gradient" && Array.isArray(bg.value)
@@ -18,7 +18,9 @@ export const LogoComposition: React.FC<{ config: LogoAnimConfig }> = ({ config }
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
   const track = getTrack(config.audio.trackId);
-  const beat = beatPhase(frame, fps, BEATMAPS[track.id]);
+  const beatmap = BEATMAPS[track.id];
+  if (!beatmap) throw new Error(`No beatmap registered for track "${track.id}"`);
+  const beat = beatPhase(frame, fps, beatmap);
   return (
     <AbsoluteFill style={bgStyle(config.scene.background)}>
       <ThreeCanvas width={width} height={height} camera={{ position: [0, 0, 6], fov: 45 }}>
