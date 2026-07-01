@@ -1,11 +1,7 @@
 {
   "name": "logomotion",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "description": "Open-source 3D beat-synced logo animator (Pulse) — SVG in, MP4 out.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,22 +9,20 @@
     "remotion:studio": "remotion studio src/remotion/index.ts",
     "remotion:render": "remotion render src/remotion/index.ts LogoPulse out/spine.mp4"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
-    "@remotion/bundler": "^4.0.484",
-    "@remotion/cli": "^4.0.484",
-    "@remotion/player": "^4.0.484",
-    "@remotion/renderer": "^4.0.484",
-    "@remotion/three": "^4.0.484",
+    "@remotion/bundler": "4.0.484",
+    "@remotion/cli": "4.0.484",
+    "@remotion/player": "4.0.484",
+    "@remotion/renderer": "4.0.484",
+    "@remotion/three": "4.0.484",
     "next": "^16.2.9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "remotion": "^4.0.484",
+    "remotion": "4.0.484",
     "three": "^0.185.0"
   },
   "devDependencies": {
