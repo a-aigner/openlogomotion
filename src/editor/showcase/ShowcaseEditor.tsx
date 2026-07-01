@@ -18,17 +18,14 @@ export default function ShowcaseEditor() {
     try {
       if (kind === "svg") {
         const svg = await file.text();
-        setWarn(parseSvg(svg).warnings);           // validate; surface warnings (non-fatal)
+        setWarn(parseSvg(svg).warnings);
         patch({ logo: { src: svgToDataUrl(svg), kind } });
       } else {
-        const src = await new Promise<string>((resolve, reject) => {
+        const src = await new Promise<string>((res, rej) => {
           const r = new FileReader();
-          r.onload = () => resolve(r.result as string);
-          r.onerror = () => reject(r.error);
-          r.readAsDataURL(file);
+          r.onload = () => res(r.result as string); r.onerror = () => rej(r.error); r.readAsDataURL(file);
         });
-        setWarn([]);
-        patch({ logo: { src, kind } });
+        setWarn([]); patch({ logo: { src, kind } });
       }
     } catch (e) { setWarn([(e as Error).message]); }
   };

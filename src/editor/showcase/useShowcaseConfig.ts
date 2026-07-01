@@ -16,9 +16,6 @@ function merge<T>(base: T, patch: DeepPartial<T>): T {
 export function useShowcaseConfig() {
   const [config, setConfig] = useState<ShowcaseConfig>(DEFAULT_SHOWCASE_CONFIG);
   const patch = useCallback((p: DeepPartial<ShowcaseConfig>) => setConfig((c) => merge(c, p)), []);
-  const setFrames = useCallback(
-    (frames: ShowcaseConfig["frames"]) => setConfig((c) => ({ ...c, frames })),
-    [],
-  );
+  const setFrames = useCallback((frames: ShowcaseConfig["frames"]) => setConfig((c) => ({ ...c, frames })), []);
   return { config, patch, setFrames } as const;
 }

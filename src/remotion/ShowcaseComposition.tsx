@@ -1,37 +1,29 @@
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, staticFile } from "remotion";
-import { getFrame } from "@/lib/frames";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, Img, staticFile } from "remotion";
 import { cutIndexAt, pickFrame } from "@/lib/cut-sequencer";
 import { getTrack } from "@/lib/tracks";
 import { DEFAULT_SHOWCASE_CONFIG, type ShowcaseConfig } from "@/lib/showcase-config";
-import type { Beatmap } from "@/lib/beat-engine";
-import { SceneFrame } from "./components/SceneFrame";
-import pulse120 from "../../public/assets/beatmaps/pulse-120.json";
-
-const BEATMAPS: Record<string, Beatmap> = { "pulse-120": pulse120 satisfies Beatmap };
+import { FrameBackground } from "./components/FrameBackground";
 
 export const ShowcaseComposition: React.FC<{ config: ShowcaseConfig }> = ({ config }) => {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
-  const track = getTrack(config.audio.trackId);
-  const beatmap = BEATMAPS[track.id];
-  if (!beatmap) throw new Error(`No beatmap registered for track "${track.id}"`);
 
-  // Never render a blank video: fall back to the full bundled frame library.
-  const list = config.frames.length > 0 ? config.frames : DEFAULT_SHOWCASE_CONFIG.frames;
-  const idx = cutIndexAt(frame, fps, beatmap.bpm, config.cutsPerBeat);
-  const current = pickFrame(list, idx);
+  const frames = config.frames.length > 0 ? config.frames : DEFAULT_SHOWCASE_CONFIG.frames;
+  const cutTimes = config.cutTimes.length > 0 ? config.cutTimes : DEFAULT_SHOWCASE_CONFIG.cutTimes;
+  const current = pickFrame(frames, cutIndexAt(frame, fps, cutTimes));
+
+  const size = Math.min(width, height) * config.logoSizePct;
+  const logoFilter = current.variant === "inverted" ? "invert(1)" : "none";
+  const audioSrc =
+    config.audio.kind === "bundled" ? staticFile(getTrack(config.audio.trackId).src) : config.audio.src;
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <SceneFrame
-        frame={getFrame(current.id)}
-        variant={current.variant}
-        logo={config.logo}
-        logoStyle={config.logoStyle}
-        width={width}
-        height={height}
-      />
-      <Audio src={staticFile(track.src)} />
+      <FrameBackground frame={current} />
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
+        <Img src={config.logo.src} style={{ width: size, height: size, objectFit: "contain", filter: logoFilter }} />
+      </AbsoluteFill>
+      <Audio src={audioSrc} />
     </AbsoluteFill>
   );
 };

@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { TRACKS } from "@/lib/tracks";
 import { FORMATS, resolveDuration, type Aspect } from "@/lib/config";
@@ -26,15 +25,16 @@ export const ShowcaseControls: React.FC<{
   };
   return (
     <div>
-      <label>Cut speed (cuts/beat): {config.cutsPerBeat}
-        <input type="range" min={1} max={4} step={1} value={config.cutsPerBeat}
-          onChange={(e) => patch({ cutsPerBeat: Number(e.target.value) })} />
+      <label>Logo size: {Math.round(config.logoSizePct * 100)}%
+        <input type="range" min={0.15} max={0.7} step={0.01} value={config.logoSizePct}
+          onChange={(e) => patch({ logoSizePct: Number(e.target.value) })} />
       </label>
-      <fieldset><legend>Music</legend>
+      <fieldset><legend>Music (bundled)</legend>
         {TRACKS.map((t) => (
           <label key={t.id} style={{ display: "block" }}>
-            <input type="radio" name="sc-track" checked={config.audio.trackId === t.id}
-              onChange={() => patch({ audio: { trackId: t.id } })} />{t.title}
+            <input type="radio" name="sc2-track"
+              checked={config.audio.kind === "bundled" && config.audio.trackId === t.id}
+              onChange={() => patch({ audio: { kind: "bundled", trackId: t.id } })} />{t.title}
           </label>
         ))}
       </fieldset>
@@ -45,7 +45,7 @@ export const ShowcaseControls: React.FC<{
         </select>
       </label>
       <label>Duration (s): {Math.round(config.format.durationInFrames / config.format.fps)}
-        <input type="range" min={4} max={12} step={1}
+        <input type="range" min={4} max={10} step={1}
           value={Math.round(config.format.durationInFrames / config.format.fps)}
           onChange={(e) => patch({ format: { durationInFrames: resolveDuration(Number(e.target.value), config.format.fps) } })} />
       </label>
