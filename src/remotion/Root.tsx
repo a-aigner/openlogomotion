@@ -1,4 +1,3 @@
-import React from "react";
 import { Composition } from "remotion";
 import { ShowcaseComposition } from "./ShowcaseComposition";
 import { DEFAULT_SHOWCASE_CONFIG, type ShowcaseConfig } from "@/lib/showcase-config";
