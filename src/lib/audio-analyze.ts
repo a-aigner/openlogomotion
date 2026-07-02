@@ -24,3 +24,18 @@ export async function decodeAudioFile(
   await ctx.close();
   return { samples: mono, sampleRate: audio.sampleRate, duration: audio.duration, dataUrl };
 }
+
+// Browser only: decode a public audio URL to mono PCM (no dataUrl needed).
+export async function decodeAudioUrl(
+  url: string
+): Promise<{ samples: Float32Array; sampleRate: number; duration: number }> {
+  const buf = await fetch(url).then((r) => r.arrayBuffer());
+  const AC: typeof AudioContext = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext);
+  const ctx = new AC();
+  const audio = await ctx.decodeAudioData(buf);
+  const ch = audio.numberOfChannels;
+  const mono = new Float32Array(audio.length);
+  for (let c = 0; c < ch; c++) { const d = audio.getChannelData(c); for (let i = 0; i < d.length; i++) mono[i] += d[i] / ch; }
+  await ctx.close();
+  return { samples: mono, sampleRate: audio.sampleRate, duration: audio.duration };
+}
