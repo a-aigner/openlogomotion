@@ -10,7 +10,12 @@ export const ShowcaseComposition: React.FC<{ config: ShowcaseConfig }> = ({ conf
 
   const frames = config.frames.length > 0 ? config.frames : DEFAULT_SHOWCASE_CONFIG.frames;
   const cutTimes = config.cutTimes.length > 0 ? config.cutTimes : DEFAULT_SHOWCASE_CONFIG.cutTimes;
-  const current = pickFrame(frames, cutIndexAt(frame, fps, cutTimes));
+
+  const montage = config.format.durationInFrames;
+  const inOutro = config.outro.enabled && frame >= montage;
+  const current = inOutro
+    ? config.outro.frame
+    : pickFrame(frames, cutIndexAt(frame, fps, cutTimes));
 
   const size = Math.min(width, height) * config.logoSizePct;
   const logoFilter = current.variant === "inverted" ? "invert(1)" : "none";
