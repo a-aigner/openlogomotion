@@ -4,13 +4,15 @@ import { useState } from "react";
 import { ShowcaseComposition } from "@/remotion/ShowcaseComposition";
 import { isSupportedLogo, logoKind, svgToDataUrl } from "@/lib/logo-src";
 import { parseSvg } from "@/lib/logo-ingest";
+import { totalFrames } from "@/lib/showcase-config";
 import { useShowcaseConfig } from "./useShowcaseConfig";
 import { FramesPanel } from "./FramesPanel";
 import { ShowcaseControls } from "./ShowcaseControls";
 import { AudioPanel } from "./AudioPanel";
+import { EndCardPanel } from "./EndCardPanel";
 
 export default function ShowcaseEditor() {
-  const { config, patch, setFrames, setCutTimes } = useShowcaseConfig();
+  const { config, patch, setFrames, setCutTimes, setOutroFrame } = useShowcaseConfig();
   const [warn, setWarn] = useState<string[]>([]);
 
   const onUpload = async (file: File) => {
@@ -33,7 +35,7 @@ export default function ShowcaseEditor() {
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "340px 1fr 320px", height: "calc(100vh - 48px)", overflow: "hidden" }}>
-      {/* Left: logo drop + audio + controls */}
+      {/* Left: logo drop + audio + end card + controls */}
       <div style={{ padding: 20, borderRight: "1px solid #e5e5e5", overflowY: "auto", background: "#ffffff" }}>
         <label style={{
           display: "flex",
@@ -64,6 +66,7 @@ export default function ShowcaseEditor() {
         ))}
         <div style={{ marginTop: 16 }}>
           <AudioPanel config={config} patch={patch} setCutTimes={setCutTimes} />
+          <EndCardPanel config={config} patch={patch} setOutroFrame={setOutroFrame} />
           <ShowcaseControls config={config} patch={patch} />
         </div>
       </div>
@@ -80,7 +83,7 @@ export default function ShowcaseEditor() {
         <Player
           component={ShowcaseComposition}
           inputProps={{ config }}
-          durationInFrames={config.format.durationInFrames}
+          durationInFrames={totalFrames(config)}
           fps={config.format.fps}
           compositionWidth={config.format.width}
           compositionHeight={config.format.height}
