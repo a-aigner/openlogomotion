@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
-import { TRACKS } from "@/lib/tracks";
-import { decodeAudioFile, analyzeToCutTimes } from "@/lib/audio-analyze";
+import { useState, useEffect } from "react";
+import { TRACKS, getTrack } from "@/lib/tracks";
+import { decodeAudioFile, decodeAudioUrl, analyzeToCutTimes } from "@/lib/audio-analyze";
 import { applyDensity } from "@/lib/cut-sequencer";
 import { DEFAULT_SHOWCASE_CONFIG, type ShowcaseConfig } from "@/lib/showcase-config";
 import type { DeepPartial } from "./useShowcaseConfig";
+import { AudioTimeline } from "./AudioTimeline";
 
 export const AudioPanel: React.FC<{
   config: ShowcaseConfig;
@@ -13,16 +14,35 @@ export const AudioPanel: React.FC<{
 }> = ({ config, patch, setCutTimes }) => {
   const [status, setStatus] = useState("");
   const [density, setDensity] = useState(config.cutDensity);
-  const [decoded, setDecoded] = useState<{ samples: Float32Array; sampleRate: number } | null>(null);
+  const [decoded, setDecoded] = useState<{ samples: Float32Array; sampleRate: number; duration: number } | null>(null);
 
   // Base grid for bundled-track density: stable reference to the default cut grid.
   const baseGrid = DEFAULT_SHOWCASE_CONFIG.cutTimes;
+
+  // Decode bundled track whenever it's selected so the waveform shows for it.
+  // bundledTrackId is null when an upload is active, avoiding unnecessary fetches.
+  const bundledTrackId = config.audio.kind === "bundled" ? config.audio.trackId : null;
+  useEffect(() => {
+    if (bundledTrackId === null) return;
+    const track = getTrack(bundledTrackId);
+    const url = "/" + track.src; // public path e.g. /assets/tracks/pulse-120.mp3
+    let cancelled = false;
+    decodeAudioUrl(url)
+      .then(({ samples, sampleRate, duration }) => {
+        if (!cancelled) setDecoded({ samples, sampleRate, duration });
+      })
+      .catch(() => {
+        // Non-fatal: bundled decode may fail in server-only contexts; waveform just won't show.
+        if (!cancelled) setDecoded(null);
+      });
+    return () => { cancelled = true; };
+  }, [bundledTrackId]);
 
   const onFile = async (file: File) => {
     setStatus("Analyzing…");
     try {
       const { samples, sampleRate, dataUrl, duration } = await decodeAudioFile(file);
-      setDecoded({ samples, sampleRate });
+      setDecoded({ samples, sampleRate, duration });
       const cuts = analyzeToCutTimes(samples, sampleRate, density);
       patch({ audio: { kind: "upload", src: dataUrl, name: file.name } });
       setCutTimes(cuts);
@@ -33,7 +53,7 @@ export const AudioPanel: React.FC<{
   const reAnalyze = (d: number) => {
     setDensity(d);
     patch({ cutDensity: d });
-    if (decoded) {
+    if (decoded && config.audio.kind === "upload") {
       // Uploaded audio: re-derive from stored samples.
       setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, d));
     } else {
@@ -103,6 +123,22 @@ export const AudioPanel: React.FC<{
         </label>
       </div>
       {status && <p style={{ color: "#6b6b6b", fontSize: 11, margin: "6px 0 0" }}>{status}</p>}
+      {decoded && (
+        <div style={{ marginTop: 10 }}>
+          <span style={{ fontSize: 11, color: "#6b6b6b", display: "block", marginBottom: 4 }}>
+            {config.cutTimes.length} cuts
+            {config.audio.kind === "upload"
+              ? " — onset-detected"
+              : " — even grid"}
+          </span>
+          <AudioTimeline
+            samples={decoded.samples}
+            sampleRate={decoded.sampleRate}
+            duration={decoded.duration}
+            cutTimes={config.cutTimes}
+          />
+        </div>
+      )}
     </div>
   );
 };
