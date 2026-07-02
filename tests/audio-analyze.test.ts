@@ -20,4 +20,13 @@ describe("analyzeToCutTimes", () => {
     const dense = analyzeToCutTimes(bursts([0.5, 1.0], sr, 1.5), sr, 3).length;
     expect(dense).toBeGreaterThan(base);
   });
+  it("lower sensitivity yields >= as many cuts as higher sensitivity", () => {
+    const sr = 44100;
+    // Six evenly-spaced bursts give the onset detector enough peaks to differentiate sensitivity levels.
+    const signal = bursts([0.3, 0.6, 0.9, 1.2, 1.5, 1.8], sr, 2.5);
+    const withLowSensitivity  = analyzeToCutTimes(signal, sr, 1, 1.0).length;
+    const withHighSensitivity = analyzeToCutTimes(signal, sr, 1, 6.0).length;
+    // Lower sensitivity threshold → more onsets detected (or equal, never fewer).
+    expect(withLowSensitivity).toBeGreaterThanOrEqual(withHighSensitivity);
+  });
 });

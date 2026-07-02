@@ -14,6 +14,7 @@ export const AudioPanel: React.FC<{
 }> = ({ config, patch, setCutTimes }) => {
   const [status, setStatus] = useState("");
   const [density, setDensity] = useState(config.cutDensity);
+  const [sensitivity, setSensitivity] = useState(config.onsetSensitivity);
   const [decoded, setDecoded] = useState<{ samples: Float32Array; sampleRate: number; duration: number } | null>(null);
 
   // Base grid for bundled-track density: stable reference to the default cut grid.
@@ -43,10 +44,10 @@ export const AudioPanel: React.FC<{
     try {
       const { samples, sampleRate, dataUrl, duration } = await decodeAudioFile(file);
       setDecoded({ samples, sampleRate, duration });
-      const cuts = analyzeToCutTimes(samples, sampleRate, density);
+      const cuts = analyzeToCutTimes(samples, sampleRate, density, sensitivity);
       patch({ audio: { kind: "upload", src: dataUrl, name: file.name } });
       setCutTimes(cuts);
-      setStatus(`${cuts.length} cuts from ${file.name} (${duration.toFixed(1)}s)`);
+      setStatus(`${cuts.length} ${cuts.length === 1 ? "cut" : "cuts"} from ${file.name} (${duration.toFixed(1)}s)`);
     } catch (e) { setStatus("Could not analyze: " + (e as Error).message); }
   };
 
@@ -54,11 +55,20 @@ export const AudioPanel: React.FC<{
     setDensity(d);
     patch({ cutDensity: d });
     if (decoded && config.audio.kind === "upload") {
-      // Uploaded audio: re-derive from stored samples.
-      setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, d));
+      // Uploaded audio: re-derive from stored samples using current sensitivity.
+      setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, d, sensitivity));
     } else {
       // Bundled audio: apply density to base grid so slider is never a no-op.
       setCutTimes(applyDensity(baseGrid, d));
+    }
+  };
+
+  const reAnalyzeSensitivity = (s: number) => {
+    setSensitivity(s);
+    patch({ onsetSensitivity: s });
+    if (decoded && config.audio.kind === "upload") {
+      // Re-derive cuts from uploaded samples with new sensitivity and current density.
+      setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, density, s));
     }
   };
 
@@ -122,11 +132,27 @@ export const AudioPanel: React.FC<{
           />
         </label>
       </div>
+      {config.audio.kind === "upload" && (
+        <div style={{ marginTop: 10 }}>
+          <label style={{ fontSize: 12, color: "#6b6b6b", display: "block" }}>
+            Sensitivity: {sensitivity} (lower = more cuts)
+            <input
+              type="range"
+              min={1}
+              max={6}
+              step={0.5}
+              value={sensitivity}
+              style={{ width: "100%", marginTop: 4 }}
+              onChange={(e) => reAnalyzeSensitivity(Number(e.target.value))}
+            />
+          </label>
+        </div>
+      )}
       {status && <p style={{ color: "#6b6b6b", fontSize: 11, margin: "6px 0 0" }}>{status}</p>}
       {decoded && (
         <div style={{ marginTop: 10 }}>
           <span style={{ fontSize: 11, color: "#6b6b6b", display: "block", marginBottom: 4 }}>
-            {config.cutTimes.length} cuts
+            {config.cutTimes.length} {config.cutTimes.length === 1 ? "cut" : "cuts"}
             {config.audio.kind === "upload"
               ? " — onset-detected"
               : " — even grid"}

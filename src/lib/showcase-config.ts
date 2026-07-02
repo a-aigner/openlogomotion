@@ -17,6 +17,7 @@ export type ShowcaseConfig = {
   audio: AudioSource;
   cutTimes: number[];
   cutDensity: number;
+  onsetSensitivity: number;
   format: { aspect: Aspect; width: number; height: number; fps: number; durationInFrames: number };
 };
 
@@ -48,5 +49,6 @@ export const DEFAULT_SHOWCASE_CONFIG: ShowcaseConfig = {
   audio: { kind: "bundled", trackId: "pulse-120" },
   cutTimes: DEFAULT_CUT_TIMES,
   cutDensity: 1,
+  onsetSensitivity: 3,
   format: { aspect: "9:16", ...FORMATS["9:16"], fps: 30, durationInFrames: resolveDuration(6, 30) },
 };

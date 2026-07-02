@@ -1,8 +1,8 @@
 import { onsetTimes } from "./onset-detect";
 import { applyDensity } from "./cut-sequencer";
 
-export function analyzeToCutTimes(samples: Float32Array, sampleRate: number, density: number): number[] {
-  const onsets = onsetTimes(samples, sampleRate);
+export function analyzeToCutTimes(samples: Float32Array, sampleRate: number, density: number, sensitivity = 3): number[] {
+  const onsets = onsetTimes(samples, sampleRate, { sensitivity });
   return applyDensity(onsets, Math.max(1, Math.round(density)));
 }
 
@@ -32,10 +32,13 @@ export async function decodeAudioUrl(
   const buf = await fetch(url).then((r) => r.arrayBuffer());
   const AC: typeof AudioContext = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext);
   const ctx = new AC();
-  const audio = await ctx.decodeAudioData(buf);
-  const ch = audio.numberOfChannels;
-  const mono = new Float32Array(audio.length);
-  for (let c = 0; c < ch; c++) { const d = audio.getChannelData(c); for (let i = 0; i < d.length; i++) mono[i] += d[i] / ch; }
-  await ctx.close();
-  return { samples: mono, sampleRate: audio.sampleRate, duration: audio.duration };
+  try {
+    const audio = await ctx.decodeAudioData(buf.slice(0));
+    const ch = audio.numberOfChannels;
+    const mono = new Float32Array(audio.length);
+    for (let c = 0; c < ch; c++) { const d = audio.getChannelData(c); for (let i = 0; i < d.length; i++) mono[i] += d[i] / ch; }
+    return { samples: mono, sampleRate: audio.sampleRate, duration: audio.duration };
+  } finally {
+    await ctx.close();
+  }
 }
