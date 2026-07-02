@@ -1,0 +1,51 @@
+{
+  "name": "logomotion",
+  "version": "1.0.0",
+  "description": "Open-source Showcase match-cut logo animator \u2014 SVG/image in, MP4 out.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "test": "vitest run",
+    "remotion:studio": "remotion studio src/remotion/index.ts",
+    "remotion:render": "remotion render src/remotion/index.ts LogoShowcase out/showcase.mp4"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openlogomotion/logomotion"
+  },
+  "keywords": [
+    "svg",
+    "animation",
+    "remotion",
+    "logo",
+    "mp4",
+    "match-cut",
+    "showcase"
+  ],
+  "type": "module",
+  "dependencies": {
+    "@remotion/bundler": "4.0.484",
+    "@remotion/cli": "4.0.484",
+    "@remotion/player": "4.0.484",
+    "@remotion/renderer": "4.0.484",
+    "next": "^16.2.9",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "remotion": "4.0.484",
+    "three": "^0.185.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.0",
+    "@vitejs/plugin-react": "^6.0.3",
+    "happy-dom": "^20.10.6",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

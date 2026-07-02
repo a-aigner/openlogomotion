@@ -1,0 +1,9 @@
+node_modules/
+.next/
+out/
+*.mp4
+!docs/media/*.mp4
+tsconfig.tsbuildinfo
+next-env.d.ts
+.superpowers/
+.DS_Store
