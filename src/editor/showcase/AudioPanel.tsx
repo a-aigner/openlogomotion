@@ -54,7 +54,8 @@ export const AudioPanel: React.FC<{
       const cuts = analyzeToCutTimes(samples, sampleRate, density, threshold);
       patch({ audio: { kind: "upload", src: dataUrl, name: file.name } });
       setCutTimes(cuts);
-      setStatus(`${cuts.length} ${cuts.length === 1 ? "cut" : "cuts"} from ${file.name} (${duration.toFixed(1)}s)`);
+      // Count lives in the live caption below (single source of truth); status just names the file.
+      setStatus(`${file.name} (${duration.toFixed(1)}s)`);
     } catch (e) { setStatus("Could not analyze: " + (e as Error).message); }
   };
 

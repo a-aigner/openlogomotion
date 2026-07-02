@@ -43,6 +43,7 @@ describe("analyzeToCutTimes", () => {
     const withLowThreshold  = analyzeToCutTimes(signal, sr, 1, 0.05).length;
     const withHighThreshold = analyzeToCutTimes(signal, sr, 1, 0.5).length;
     // Lower threshold → more or equal onsets (never fewer).
+    expect(withLowThreshold).toBeGreaterThan(0); // guard against a broken detector making 0>=0 pass
     expect(withLowThreshold).toBeGreaterThanOrEqual(withHighThreshold);
   });
   it("lower threshold yields STRICTLY MORE cuts on a graded signal", () => {

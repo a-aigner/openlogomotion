@@ -77,6 +77,7 @@ describe("onsetTimes", () => {
     const sig = signalWithBursts([0.3, 0.6, 0.9, 1.2, 1.5], sr, 2);
     const low  = onsetTimes(sig, sr, { threshold: 0.05 }).length;
     const high = onsetTimes(sig, sr, { threshold: 0.5  }).length;
+    expect(low).toBeGreaterThan(0); // guard against a broken detector making 0>=0 pass
     expect(low).toBeGreaterThanOrEqual(high);
   });
 
