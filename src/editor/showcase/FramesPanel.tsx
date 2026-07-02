@@ -43,6 +43,7 @@ export const FramesPanel: React.FC<{
       reader.onload = () => {
         setFrames([...items, { kind: "image", variant: "normal", src: reader.result as string, fit: "cover" }]);
       };
+      reader.onerror = () => alert("Could not read that image file.");
       reader.readAsDataURL(file);
     };
     input.click();
@@ -56,6 +57,7 @@ export const FramesPanel: React.FC<{
         update(i, { ...frame, src: reader.result as string });
       }
     };
+    reader.onerror = () => alert("Could not read that image file.");
     reader.readAsDataURL(file);
   };
 
