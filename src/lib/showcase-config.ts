@@ -19,6 +19,7 @@ export type ShowcaseConfig = {
   cutDensity: number;
   onsetSensitivity: number;
   format: { aspect: Aspect; width: number; height: number; fps: number; durationInFrames: number };
+  outro: { enabled: boolean; frame: Frame; holdSec: number };
 };
 
 const PLACEHOLDER_LOGO =
@@ -51,4 +52,13 @@ export const DEFAULT_SHOWCASE_CONFIG: ShowcaseConfig = {
   cutDensity: 1,
   onsetSensitivity: 8,
   format: { aspect: "9:16", ...FORMATS["9:16"], fps: 30, durationInFrames: resolveDuration(6, 30) },
+  outro: { enabled: false, frame: { kind: "solid", variant: "normal", color: "#111111" }, holdSec: 2 },
 };
+
+export function outroFrames(c: ShowcaseConfig): number {
+  return c.outro.enabled ? Math.round(c.outro.holdSec * c.format.fps) : 0;
+}
+
+export function totalFrames(c: ShowcaseConfig): number {
+  return c.format.durationInFrames + outroFrames(c);
+}
