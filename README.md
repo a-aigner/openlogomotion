@@ -35,6 +35,11 @@ Upload a logo, arrange generated color frames, and export a fast-cutting "logo m
 
 ---
 
+## Requirements
+
+- **Node.js 20+** and npm.
+- On the **first video export**, `@remotion/renderer` downloads a headless Chromium (one-time, ~a minute, needs internet). Everything after that — including all rendering — runs locally.
+
 ## Quickstart
 
 ```bash

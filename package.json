@@ -1,7 +1,7 @@
 {
   "name": "logomotion",
   "version": "1.0.0",
-  "description": "Open-source Showcase match-cut logo animator — SVG/image in, MP4 out.",
+  "description": "Open-source Showcase match-cut logo animator \u2014 SVG/image in, MP4 out.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -44,5 +44,8 @@
     "happy-dom": "^20.10.6",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
