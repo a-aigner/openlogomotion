@@ -100,7 +100,7 @@ export const FramesPanel: React.FC<{
                 style={colorInputStyle}
                 onChange={(e) => update(i, { ...f, color: e.target.value })}
               />
-            ) : (
+            ) : f.kind === "palette" ? (
               f.colors.map((c, ci) => (
                 <input
                   key={ci}
@@ -110,6 +110,9 @@ export const FramesPanel: React.FC<{
                   onChange={(e) => update(i, { ...f, colors: f.colors.map((x, xi) => (xi === ci ? e.target.value : x)) })}
                 />
               ))
+            ) : (
+              // image frame: no color swatches in this panel (editor UI handled separately)
+              null
             )}
             <div style={{ marginLeft: "auto", display: "flex", gap: 2 }}>
               <button style={iconBtnStyle} onClick={() => move(i, -1)}>↑</button>

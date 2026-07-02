@@ -4,7 +4,8 @@ import { FORMATS, resolveDuration } from "./config";
 export type FrameVariant = "normal" | "inverted";
 export type Frame =
   | { kind: "solid"; variant: FrameVariant; color: string }
-  | { kind: "palette"; variant: FrameVariant; colors: string[] };
+  | { kind: "palette"; variant: FrameVariant; colors: string[] }
+  | { kind: "image"; variant: FrameVariant; src: string; fit: "cover" | "contain" };
 export type AudioSource =
   | { kind: "bundled"; trackId: string }
   | { kind: "upload"; src: string; name: string };
