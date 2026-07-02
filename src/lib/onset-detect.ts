@@ -1,12 +1,13 @@
-export type OnsetOptions = { hop?: number; sensitivity?: number; minGapMs?: number };
+export type OnsetOptions = { hop?: number; threshold?: number; minGapMs?: number };
+
+const FLOOR = 1e-4;
 
 // Energy-based onset detection: short-time RMS energy → half-wave-rectified
-// positive difference → adaptive-threshold peak-picking. Pure & deterministic.
+// positive difference ODF → relative-to-peak threshold peak-picking. Pure & deterministic.
+// threshold: fraction of max ODF a candidate peak must meet (0,1]. LOWER → MORE onsets.
 export function onsetTimes(samples: Float32Array, sampleRate: number, opts: OnsetOptions = {}): number[] {
   const hop = opts.hop ?? 512;
-  // Default 3.0: suppresses false onsets from slow-varying background hum; lower
-  // toward ~1.3 for quieter/softer transients.
-  const sensitivity = opts.sensitivity ?? 3.0;
+  const threshold = opts.threshold ?? 0.15;
   const minGapSamples = ((opts.minGapMs ?? 80) / 1000) * sampleRate;
   const nHops = Math.floor(samples.length / hop);
   if (nHops < 3) return [];
@@ -24,16 +25,17 @@ export function onsetTimes(samples: Float32Array, sampleRate: number, opts: Onse
   const odf = new Float32Array(nHops);
   for (let i = 1; i < nHops; i++) odf[i] = Math.max(0, energy[i] - energy[i - 1]);
 
-  // 3. Adaptive threshold (sliding mean) + local-max peak pick + min gap.
-  const win = 8;
+  // 3. Global max for relative threshold. Silence guard.
+  let maxOdf = 0;
+  for (let i = 0; i < nHops; i++) if (odf[i] > maxOdf) maxOdf = odf[i];
+  if (maxOdf < FLOOR) return [];
+
+  // 4. Local-max peak pick + relative-to-peak threshold + min gap.
+  const minVal = Math.max(FLOOR, threshold * maxOdf);
   const onsets: number[] = [];
   let lastOnset = -Infinity;
   for (let i = 1; i < nHops - 1; i++) {
-    let mean = 0, cnt = 0;
-    for (let k = Math.max(0, i - win); k <= Math.min(nHops - 1, i + win); k++) { mean += odf[k]; cnt++; }
-    mean /= cnt;
-    const thresh = mean * sensitivity + 1e-4;
-    if (odf[i] > thresh && odf[i] >= odf[i - 1] && odf[i] >= odf[i + 1]) {
+    if (odf[i] >= minVal && odf[i] >= odf[i - 1] && odf[i] >= odf[i + 1]) {
       const pos = i * hop;
       if (pos - lastOnset >= minGapSamples) { onsets.push(pos / sampleRate); lastOnset = pos; }
     }

@@ -1,8 +1,8 @@
 import { onsetTimes } from "./onset-detect";
 import { applyDensity } from "./cut-sequencer";
 
-export function analyzeToCutTimes(samples: Float32Array, sampleRate: number, density: number, sensitivity = 3): number[] {
-  const onsets = onsetTimes(samples, sampleRate, { sensitivity });
+export function analyzeToCutTimes(samples: Float32Array, sampleRate: number, density: number, threshold = 0.15): number[] {
+  const onsets = onsetTimes(samples, sampleRate, { threshold });
   return applyDensity(onsets, Math.max(1, Math.round(density)));
 }
 

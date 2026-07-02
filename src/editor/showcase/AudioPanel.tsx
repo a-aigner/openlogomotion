@@ -7,6 +7,12 @@ import { DEFAULT_SHOWCASE_CONFIG, type ShowcaseConfig } from "@/lib/showcase-con
 import type { DeepPartial } from "./useShowcaseConfig";
 import { AudioTimeline } from "./AudioTimeline";
 
+// Map slider value s (1–10) to a threshold fraction.
+// s=1 → 0.50 (few cuts, high bar); s=8 → 0.15 (default); s=10 → 0.05 (many cuts).
+function sensitivityToThreshold(s: number): number {
+  return Math.max(0.05, Math.min(0.5, 0.55 - s * 0.05));
+}
+
 export const AudioPanel: React.FC<{
   config: ShowcaseConfig;
   patch: (p: DeepPartial<ShowcaseConfig>) => void;
@@ -44,7 +50,8 @@ export const AudioPanel: React.FC<{
     try {
       const { samples, sampleRate, dataUrl, duration } = await decodeAudioFile(file);
       setDecoded({ samples, sampleRate, duration });
-      const cuts = analyzeToCutTimes(samples, sampleRate, density, sensitivity);
+      const threshold = sensitivityToThreshold(sensitivity);
+      const cuts = analyzeToCutTimes(samples, sampleRate, density, threshold);
       patch({ audio: { kind: "upload", src: dataUrl, name: file.name } });
       setCutTimes(cuts);
       setStatus(`${cuts.length} ${cuts.length === 1 ? "cut" : "cuts"} from ${file.name} (${duration.toFixed(1)}s)`);
@@ -56,7 +63,8 @@ export const AudioPanel: React.FC<{
     patch({ cutDensity: d });
     if (decoded && config.audio.kind === "upload") {
       // Uploaded audio: re-derive from stored samples using current sensitivity.
-      setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, d, sensitivity));
+      const threshold = sensitivityToThreshold(sensitivity);
+      setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, d, threshold));
     } else {
       // Bundled audio: apply density to base grid so slider is never a no-op.
       setCutTimes(applyDensity(baseGrid, d));
@@ -68,7 +76,8 @@ export const AudioPanel: React.FC<{
     patch({ onsetSensitivity: s });
     if (decoded && config.audio.kind === "upload") {
       // Re-derive cuts from uploaded samples with new sensitivity and current density.
-      setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, density, s));
+      const threshold = sensitivityToThreshold(s);
+      setCutTimes(analyzeToCutTimes(decoded.samples, decoded.sampleRate, density, threshold));
     }
   };
 
@@ -135,12 +144,12 @@ export const AudioPanel: React.FC<{
       {config.audio.kind === "upload" && (
         <div style={{ marginTop: 10 }}>
           <label style={{ fontSize: 12, color: "#6b6b6b", display: "block" }}>
-            Sensitivity: {sensitivity} (lower = more cuts)
+            Sensitivity: {sensitivity} (higher = more cuts)
             <input
               type="range"
               min={1}
-              max={6}
-              step={0.5}
+              max={10}
+              step={1}
               value={sensitivity}
               style={{ width: "100%", marginTop: 4 }}
               onChange={(e) => reAnalyzeSensitivity(Number(e.target.value))}
