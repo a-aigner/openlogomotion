@@ -1,13 +1,13 @@
 {
   "name": "logomotion",
   "version": "1.0.0",
-  "description": "Open-source 3D beat-synced logo animator (Pulse) — SVG in, MP4 out.",
+  "description": "Open-source Showcase match-cut logo animator — SVG/image in, MP4 out.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "test": "vitest run",
     "remotion:studio": "remotion studio src/remotion/index.ts",
-    "remotion:render": "remotion render src/remotion/index.ts LogoPulse out/spine.mp4"
+    "remotion:render": "remotion render src/remotion/index.ts LogoShowcase out/showcase.mp4"
   },
   "license": "MIT",
   "repository": {
@@ -16,23 +16,19 @@
   },
   "keywords": [
     "svg",
-    "3d",
     "animation",
     "remotion",
     "logo",
     "mp4",
-    "beat-sync"
+    "match-cut",
+    "showcase"
   ],
   "type": "module",
   "dependencies": {
-    "@pmndrs/assets": "^1.7.0",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.6.1",
     "@remotion/bundler": "4.0.484",
     "@remotion/cli": "4.0.484",
     "@remotion/player": "4.0.484",
     "@remotion/renderer": "4.0.484",
-    "@remotion/three": "4.0.484",
     "next": "^16.2.9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

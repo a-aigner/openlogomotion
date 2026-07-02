@@ -18,7 +18,7 @@ const getBundle = () =>
 export async function renderToFile(
   config: unknown,
   outPath: string,
-  compositionId: string = "LogoPulse",
+  compositionId: string = "LogoShowcase",
 ): Promise<void> {
   const serveUrl = await getBundle();
   const inputProps = { config };
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const { config, id } = (await req.json()) as { config: unknown; id?: string };
     dir = await mkdtemp(join(tmpdir(), "logomotion-"));
     const out = join(dir, "logo.mp4");
-    await renderToFile(config, out, id ?? "LogoPulse");
+    await renderToFile(config, out, id ?? "LogoShowcase");
     const bytes = await readFile(out);
     return new Response(new Uint8Array(bytes), {
       headers: {
