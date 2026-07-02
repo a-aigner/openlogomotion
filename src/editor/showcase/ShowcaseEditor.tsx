@@ -32,8 +32,8 @@ export default function ShowcaseEditor() {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "280px 1fr 320px", height: "calc(100vh - 48px)", overflow: "hidden" }}>
-      {/* Left: drop card */}
+    <div style={{ display: "grid", gridTemplateColumns: "340px 1fr 320px", height: "calc(100vh - 48px)", overflow: "hidden" }}>
+      {/* Left: logo drop + audio + controls */}
       <div style={{ padding: 20, borderRight: "1px solid #e5e5e5", overflowY: "auto", background: "#ffffff" }}>
         <label style={{
           display: "flex",
@@ -62,6 +62,10 @@ export default function ShowcaseEditor() {
         {warn.map((w, i) => (
           <p key={i} style={{ color: "#c60", fontSize: 12, marginTop: 8 }}>⚠ {w}</p>
         ))}
+        <div style={{ marginTop: 16 }}>
+          <AudioPanel config={config} patch={patch} setCutTimes={setCutTimes} />
+          <ShowcaseControls config={config} patch={patch} />
+        </div>
       </div>
 
       {/* Center: dark letterbox */}
@@ -94,11 +98,9 @@ export default function ShowcaseEditor() {
         />
       </div>
 
-      {/* Right: panels */}
+      {/* Right: frames list only */}
       <div style={{ borderLeft: "1px solid #e5e5e5", background: "#ffffff", overflowY: "auto" }}>
-        <AudioPanel config={config} patch={patch} setCutTimes={setCutTimes} />
         <FramesPanel config={config} setFrames={setFrames} />
-        <ShowcaseControls config={config} patch={patch} />
       </div>
     </div>
   );
