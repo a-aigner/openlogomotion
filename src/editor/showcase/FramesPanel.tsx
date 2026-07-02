@@ -88,6 +88,8 @@ export const FramesPanel: React.FC<{
   // Drag-and-drop state: index of the row currently being dragged, and the row being hovered over.
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  // Which image row's "⋯" context menu is open (keeps rows single-line/uniform height).
+  const [menuOpen, setMenuOpen] = useState<number | null>(null);
 
   const items = config.frames;
   const update = (i: number, next: Frame) => setFrames(items.map((f, k) => (k === i ? next : f)));
@@ -207,6 +209,19 @@ export const FramesPanel: React.FC<{
     flexShrink: 0,
   };
 
+  const menuItemStyle: React.CSSProperties = {
+    display: "block",
+    width: "100%",
+    textAlign: "left",
+    padding: "6px 10px",
+    border: "none",
+    background: "transparent",
+    color: "#1a1a1a",
+    cursor: "pointer",
+    fontSize: 12,
+    borderRadius: 4,
+  };
+
   return (
     <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #e5e5e5" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
@@ -223,9 +238,7 @@ export const FramesPanel: React.FC<{
             onDrop={(e) => onDrop(i, e)}
             onDragEnd={onDragEnd}
             style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
+              position: "relative",
               padding: "4px 0",
               borderBottom: i < items.length - 1 ? "1px solid #f3f3f3" : "none",
               opacity: dragIndex === i ? 0.4 : 1,
@@ -259,34 +272,61 @@ export const FramesPanel: React.FC<{
                   />
                 ))
               ) : null}
-              <div style={{ marginLeft: "auto", display: "flex", gap: 2 }}>
-                <button style={iconBtnStyle} onClick={() => invert(i)}>◐</button>
-                <button style={iconBtnStyle} onClick={() => remove(i)}>✕</button>
+              <div style={{ marginLeft: "auto", display: "flex", gap: 2, alignItems: "center" }}>
+                {f.kind === "image" && (
+                  <button
+                    style={iconBtnStyle}
+                    title="Image options"
+                    onClick={() => setMenuOpen(menuOpen === i ? null : i)}
+                  >
+                    ⋯
+                  </button>
+                )}
+                <button style={iconBtnStyle} onClick={() => invert(i)} title="Invert logo">◐</button>
+                <button style={iconBtnStyle} onClick={() => remove(i)} title="Remove">✕</button>
               </div>
             </div>
-            {/* Per-image controls: Replace + fit toggle */}
-            {f.kind === "image" && (
-              <div style={{ display: "flex", gap: 4, alignItems: "center", paddingLeft: 22 }}>
-                <label style={{ ...iconBtnStyle, cursor: "pointer" }}>
-                  Replace
-                  <input
-                    type="file"
-                    accept="image/*,.png,.jpg,.jpeg,.webp,.svg"
-                    style={{ display: "none" }}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) replaceImageSrc(i, file);
-                    }}
-                  />
-                </label>
-                <button
-                  style={{ ...iconBtnStyle, minWidth: 52, textAlign: "center" }}
-                  onClick={() => update(i, { ...f, fit: f.fit === "cover" ? "contain" : "cover" })}
-                  title="Toggle cover/contain"
+            {/* Image options in a "⋯" popup so image rows stay the same height as the others. */}
+            {f.kind === "image" && menuOpen === i && (
+              <>
+                <div style={{ position: "fixed", inset: 0, zIndex: 15 }} onClick={() => setMenuOpen(null)} />
+                <div
+                  style={{
+                    position: "absolute",
+                    right: 8,
+                    top: 30,
+                    zIndex: 20,
+                    minWidth: 150,
+                    padding: 4,
+                    background: "#ffffff",
+                    border: "1px solid #e5e5e5",
+                    borderRadius: 6,
+                    boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
+                  }}
                 >
-                  {f.fit}
-                </button>
-              </div>
+                  <label style={{ ...menuItemStyle, cursor: "pointer" }}>
+                    Replace image…
+                    <input
+                      type="file"
+                      accept="image/*,.png,.jpg,.jpeg,.webp,.svg"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) replaceImageSrc(i, file);
+                        setMenuOpen(null);
+                      }}
+                    />
+                  </label>
+                  <button style={{ ...menuItemStyle, fontWeight: f.fit === "cover" ? 600 : 400 }}
+                    onClick={() => update(i, { ...f, fit: "cover" })}>
+                    Cover{f.fit === "cover" ? " ✓" : ""}
+                  </button>
+                  <button style={{ ...menuItemStyle, fontWeight: f.fit === "contain" ? 600 : 400 }}
+                    onClick={() => update(i, { ...f, fit: "contain" })}>
+                    Contain{f.fit === "contain" ? " ✓" : ""}
+                  </button>
+                </div>
+              </>
             )}
           </li>
         ))}
